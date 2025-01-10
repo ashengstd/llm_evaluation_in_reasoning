@@ -9,10 +9,10 @@ from typing import Any, Callable, List
 from dotenv import load_dotenv
 from fire import Fire
 
-from models.dataloader import SimpleBenchDataset
-from models.question import QuestionType
-from utils.models import LiteLLMModel, MajorityVoteModel
-from utils.scorers import eval_majority_vote, eval_single_question
+from data.dataloader import BaseBenchDataset, SimpleBenchDataset
+from data.question import QuestionType
+from eval.model import LiteLLMModel, MajorityVoteModel
+from eval.scorer import eval_majority_vote, eval_single_question
 
 load_dotenv()
 
@@ -65,7 +65,7 @@ def run_benchmark(
     Path(output_dir).mkdir(exist_ok=True)
 
     # load dataset
-    dataset = SimpleBenchDataset(dataset_path)
+    dataset: BaseBenchDataset = SimpleBenchDataset(dataset_path)
     logging.info(f"Loaded {len(dataset)} examples from {dataset_path}")
 
     # load system prompt
@@ -81,7 +81,10 @@ def run_benchmark(
         max_retries=max_retries,
         system_prompt=system_prompt,
     )
-    scorer: Callable[[str, str], Any] | Callable[[List[str], str], Any]
+    scorer: (
+        Callable[[str, str, QuestionType], Any]
+        | Callable[[List[str], str, QuestionType], Any]
+    )
     if num_responses > 1:
         model = MajorityVoteModel(model=model, num_responses=num_responses)
         scorer = eval_majority_vote
@@ -90,7 +93,11 @@ def run_benchmark(
 
     # run evaluation
     logging.info(f"Starting evaluation with model: {model_name}")
-    results, accuracy = asyncio.run(dataset.evaluate_model(model, scorer))
+    results, accuracy = asyncio.run(
+        dataset.evaluate_model(
+            model, scorer, question_type=QuestionType.MULTIPLE_CHOICE
+        )
+    )
 
     # save results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

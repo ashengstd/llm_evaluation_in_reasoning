@@ -25,10 +25,10 @@ import logging
 import re
 from typing import List
 
-from models.question import QuestionType
+from data.question import QuestionType
 
 
-def extract_answer(output: str, question_type=QuestionType.MULTIPLE_CHOICE) -> str:
+def extract_answer(output: str, question_type) -> str:
     output = output.strip()
     match question_type:
         case QuestionType.MULTIPLE_CHOICE:
@@ -52,11 +52,11 @@ def extract_answer(output: str, question_type=QuestionType.MULTIPLE_CHOICE) -> s
     raise ValueError("No answer found in model output")
 
 
-def eval_majority_vote(output: List[str], answer: str):
+def eval_majority_vote(output: List[str], answer: str, question_type):
     model_answers = []
     for _output in output:
         try:
-            model_answers.append(extract_answer(_output))
+            model_answers.append(extract_answer(_output, question_type=question_type))
         except ValueError:
             logging.warning("no answer in this response")
             continue  # Skip this output if extraction fails
@@ -68,7 +68,7 @@ def eval_majority_vote(output: List[str], answer: str):
     return model_answers.count(answer) > len(model_answers) / 2
 
 
-def eval_single_question(output: str, answer: str):
-    model_answer = extract_answer(output)
+def eval_single_question(output: str, answer: str, question_type) -> bool:
+    model_answer = extract_answer(output, question_type)
     logging.info(f"Model answer: {model_answer} | Ground truth answer: {answer}")
     return model_answer == answer

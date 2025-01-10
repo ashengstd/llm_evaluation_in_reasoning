@@ -1,36 +1,48 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Any, Callable, Literal
 
 from datasets import Dataset, load_dataset
+
+from data.question import QuestionType
+from eval.model import LiteLLMModel, MajorityVoteModel
 
 
 class BaseBenchDataset(ABC):
     dataset: Dataset
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, *arg) -> None:
         pass
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.dataset)
+
+    @abstractmethod
+    async def evaluate_model(self, model, scorer, question_type) -> Any:
+        pass
 
 
 class SimpleBenchDataset(BaseBenchDataset):
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str) -> None:
         with open(file_path, "r") as file:
             data = json.load(file)
             self.dataset = data["eval_data"]
 
-    async def evaluate_model(self, model, scorer):
-        results = []
+    async def evaluate_model(
+        self,
+        model: LiteLLMModel | MajorityVoteModel,
+        scorer: Callable[[str | list[str], str, QuestionType], bool],
+        question_type: QuestionType,
+    ) -> tuple[list[dict], float]:
+        results: list[dict] = []
         total_correct = 0
 
         for i, example in enumerate(self.dataset):
             try:
                 response = await model.predict(example["prompt"])
-                is_correct = scorer(response, example["answer"])
+                is_correct = scorer(response, example["answer"], question_type)
                 results.append(
                     {
                         "prompt": example["prompt"],

@@ -69,7 +69,7 @@ class BaseModel(ABC, Generic[T]):
         pass
 
 
-class LiteLLMModel(BaseModel):
+class LiteLLMModel(BaseModel[str]):
     def __init__(
         self,
         model_name: str,
