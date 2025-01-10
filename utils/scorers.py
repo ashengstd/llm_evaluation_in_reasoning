@@ -21,16 +21,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import logging
 import re
 from typing import List
 
+from models.question import QuestionType
 
-def extract_answer(output: str) -> str:
-    match = re.search(r"Final Answer:\s*([A-F])", output.strip(), re.IGNORECASE)
+
+def extract_answer(output: str, question_type=QuestionType.MULTIPLE_CHOICE) -> str:
+    output = output.strip()
+    match question_type:
+        case QuestionType.MULTIPLE_CHOICE:
+            match = re.search(r"Final Answer:\s*([A-F])", output, re.IGNORECASE)
+        case QuestionType.BLANK_FILL:
+            match = re.search(r"Final Answer:\s*(.*)", output, re.IGNORECASE)
+        case _:
+            logging.error("Invalid question type")
+            raise ValueError("Invalid question type")
+
     if match:
-        return match.group(1).upper()
-    else:
-        raise ValueError("No answer found in model output")
+        answer = (
+            match.group(1).upper()
+            if question_type == QuestionType.MULTIPLE_CHOICE
+            else match.group(1)
+        )
+        logging.info(f"Answer extracted: {answer}")
+        return answer
+
+    logging.error("No answer found in model output")
+    raise ValueError("No answer found in model output")
 
 
 def eval_majority_vote(output: List[str], answer: str):
@@ -39,14 +58,17 @@ def eval_majority_vote(output: List[str], answer: str):
         try:
             model_answers.append(extract_answer(_output))
         except ValueError:
+            logging.warning("no answer in this response")
             continue  # Skip this output if extraction fails
 
     if not model_answers:
+        logging.error("Failed to extract any valid answers from model outputs")
         raise ValueError("Failed to extract any valid answers from model outputs")
 
     return model_answers.count(answer) > len(model_answers) / 2
 
 
-def eval_multi_choice(output: str, answer: str):
+def eval_single_question(output: str, answer: str):
     model_answer = extract_answer(output)
+    logging.info(f"Model answer: {model_answer} | Ground truth answer: {answer}")
     return model_answer == answer

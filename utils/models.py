@@ -22,6 +22,7 @@
 # SOFTWARE.
 
 import asyncio
+import logging
 import random
 from abc import ABC, abstractmethod
 from typing import Generic, List, Optional, TypeVar
@@ -97,7 +98,7 @@ class LiteLLMModel(BaseModel):
                 if self.system_prompt is not None:
                     messages.append({"role": "system", "content": self.system_prompt})
                 messages.append({"role": "user", "content": prompt})
-
+                logging.info(f"Sending prompt to model: {prompt}")
                 response = await acompletion(
                     model=MODEL_MAP[self.model_name],
                     messages=messages,
@@ -109,12 +110,12 @@ class LiteLLMModel(BaseModel):
                 if response.choices[0].message.content is not None:
                     return response.choices[0].message.content
                 else:
-                    print(response)
+                    logging.debug("No content in response" + str(response))
                     raise Exception("No content in response")
 
             except RateLimitError as e:
                 delay *= EXPONENTIAL_BASE * (1 + random.random())
-                print(
+                logging.warning(
                     f"RateLimitError, retrying after {round(delay, 2)} seconds, {i+1}-th retry...",
                     e,
                 )
@@ -123,7 +124,7 @@ class LiteLLMModel(BaseModel):
             except Exception as e:
                 print(f"Error in retry {i+1}, retrying...", e)
                 continue
-
+        logging.error(f"Failed to get response after {self.max_retries} retries")
         raise Exception("Failed to get response after max retries")
 
 
