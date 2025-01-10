@@ -8,4 +8,13 @@ dependencies = [
     "fire",
     "litellm==1.54.1",
     "python-dotenv",
+    "datasets",
+    "pathlib"
 ]
+[[tool.mypy.overrides]]
+module = "datasets"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "fire"
+ignore_missing_imports = true
