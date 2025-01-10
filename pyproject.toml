@@ -1,0 +1,11 @@
+[project]
+name = "llm_evaluation_in_reasoning"
+version = "0.1.0"
+description = "A project for the evaluation of reasoning in the LLM"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fire",
+    "litellm",
+    "python-dotenv",
+]
