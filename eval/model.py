@@ -98,7 +98,7 @@ class LiteLLMModel(BaseModel[str]):
                 if self.system_prompt is not None:
                     messages.append({"role": "system", "content": self.system_prompt})
                 messages.append({"role": "user", "content": prompt})
-                logging.info(f"Sending prompt to model: {prompt}")
+                logging.info(f"\n\n\n\nSending prompt to model: {prompt}")
                 response = await acompletion(
                     model=MODEL_MAP[self.model_name],
                     messages=messages,
