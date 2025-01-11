@@ -1,6 +1,6 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-version = "1.0.0"
+version = "1.0.1"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
 license = { text = "MIT" }
@@ -35,7 +35,6 @@ ignore_missing_imports = true
 
 [tool.uv.workspace]
 members = ["llm_evaluation_in_reasoning"]
-exclude = ["LICENSE"]
 
 [project.scripts]
-llm_eval = "src.llm_evaluation_in_reasoning.app:app"
+llm_eval = "llm_evaluation_in_reasoning.app:app"

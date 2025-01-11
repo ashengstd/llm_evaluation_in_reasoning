@@ -527,8 +527,8 @@ wheels = [
 
 [[package]]
 name = "llm-evaluation-in-reasoning"
-version = "0.1.0"
-source = { editable = "." }
+version = "1.0.0"
+source = { virtual = "." }
 dependencies = [
     { name = "colorlog" },
     { name = "datasets" },
