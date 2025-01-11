@@ -11,10 +11,17 @@ import rich.logging
 import rich.progress
 from fire import Fire
 
-from src.data.dataloader import BaseBenchDataloader, GSMSymbolic, SimpleBenchDataloader
-from src.data.question import QuestionType
-from src.eval.model import LiteLLMModel, MajorityVoteModel
-from src.eval.scorer import eval_majority_vote, eval_single_question
+from llm_evaluation_in_reasoning.data.dataloader import (
+    BaseBenchDataloader,
+    GSMSymbolic,
+    SimpleBenchDataloader,
+)
+from llm_evaluation_in_reasoning.data.question import QuestionType
+from llm_evaluation_in_reasoning.eval.model import LiteLLMModel, MajorityVoteModel
+from llm_evaluation_in_reasoning.eval.scorer import (
+    eval_majority_vote,
+    eval_single_question,
+)
 
 
 class LOGGER_LEVEL(Enum):

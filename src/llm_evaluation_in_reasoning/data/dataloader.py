@@ -9,8 +9,8 @@ import rich
 import rich.progress
 from datasets import Dataset, DatasetDict, load_dataset
 
-from src.data.question import QuestionType
-from src.eval.model import LiteLLMModel, MajorityVoteModel
+from llm_evaluation_in_reasoning.data.question import QuestionType
+from llm_evaluation_in_reasoning.eval.model import LiteLLMModel, MajorityVoteModel
 
 
 class BaseBenchDataloader(ABC):

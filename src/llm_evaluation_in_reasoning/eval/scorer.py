@@ -25,7 +25,7 @@ import logging
 import re
 from typing import List
 
-from src.data.question import QuestionType
+from llm_evaluation_in_reasoning.data.question import QuestionType
 
 
 def extract_answer(output: str, question_type: QuestionType) -> str | int:
