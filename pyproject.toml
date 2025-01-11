@@ -1,9 +1,9 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-version = "1.0.1"
+version = "1.0.1.dev0"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 # license = "MIT"
 authors = [
     {name = "Sheng Ren",email = "rensheng0410@gamil.com"},
@@ -32,6 +32,18 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "colorlog"
 ignore_missing_imports = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "hatch",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_evaluation_in_reasoning"]
 
 [tool.uv.workspace]
 members = ["llm_evaluation_in_reasoning"]
