@@ -1,9 +1,16 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-version = "0.1.0"
+version = "1.0.0"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
-requires-python = ">=3.10"
+license = { text = "MIT" }
+# license = "MIT"
+authors = [
+    {name = "Sheng Ren",email = "rensheng0410@gamil.com"},
+    {name = "Xiya Pang",email = "sianing0531@gmail.com"}
+]
+
+requires-python = ">=3.11"
 dependencies = [
     "fire",
     "litellm==1.54.1",
@@ -26,12 +33,9 @@ ignore_missing_imports = true
 module = "colorlog"
 ignore_missing_imports = true
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.uv.workspace]
+members = ["llm_evaluation_in_reasoning"]
+exclude = ["LICENSE"]
 
 [project.scripts]
-llm_eval = "src.app:app"
-
-[tool.setuptools.packages]
-find = { where = ["src"] }
+llm_eval = "src.llm_evaluation_in_reasoning.app:app"
