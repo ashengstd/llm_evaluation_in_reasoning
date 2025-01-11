@@ -33,7 +33,6 @@ from openai import RateLimitError
 
 load_dotenv()
 
-
 MODEL_MAP = {
     "gpt-4o-mini": "gpt-4o-mini",
     "claude-3-5-sonnet-20240620": "claude-3-5-sonnet-20240620",
@@ -98,7 +97,7 @@ class LiteLLMModel(BaseModel[str]):
                 if self.system_prompt is not None:
                     messages.append({"role": "system", "content": self.system_prompt})
                 messages.append({"role": "user", "content": prompt})
-                logging.info(f"\n\n\n\nSending prompt to model: {prompt}")
+                logging.debug(f"Sending prompt to model: {prompt}")
                 response = await acompletion(
                     model=MODEL_MAP[self.model_name],
                     messages=messages,
@@ -122,7 +121,7 @@ class LiteLLMModel(BaseModel[str]):
                 await asyncio.sleep(delay)
                 continue
             except Exception as e:
-                print(f"Error in retry {i+1}, retrying...", e)
+                logging.warning(f"Error in retry {i+1}, retrying...", e)
                 continue
         logging.error(f"Failed to get response after {self.max_retries} retries")
         raise Exception("Failed to get response after max retries")

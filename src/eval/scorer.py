@@ -25,16 +25,17 @@ import logging
 import re
 from typing import List
 
-from data.question import QuestionType
+from src.data.question import QuestionType
 
 
-def extract_answer(output: str, question_type) -> str:
-    output = output.strip()
+def extract_answer(output: str, question_type: QuestionType) -> str | int:
     match question_type:
         case QuestionType.MULTIPLE_CHOICE:
+            output = output.strip()
             match = re.search(r"Final Answer:\s*([A-F])", output, re.IGNORECASE)
         case QuestionType.BLANK_FILL:
-            match = re.search(r"Final Answer:\s*(.*)", output, re.IGNORECASE)
+            output = output.replace(",", " ")
+            match = re.findall(r"-?\d+\.?\d*", output)[-1]
         case _:
             logging.error("Invalid question type")
             raise ValueError("Invalid question type")
@@ -43,7 +44,7 @@ def extract_answer(output: str, question_type) -> str:
         answer = (
             match.group(1).upper()
             if question_type == QuestionType.MULTIPLE_CHOICE
-            else match.group(1)
+            else int(float(str(match)))
         )
         logging.info(f"Answer extracted: {answer}")
         return answer
@@ -52,7 +53,9 @@ def extract_answer(output: str, question_type) -> str:
     raise ValueError("No answer found in model output")
 
 
-def eval_majority_vote(output: List[str], answer: str, question_type):
+def eval_majority_vote(
+    output: List[str], answer: str | int, question_type: QuestionType
+) -> bool:
     model_answers = []
     for _output in output:
         try:
@@ -68,7 +71,9 @@ def eval_majority_vote(output: List[str], answer: str, question_type):
     return model_answers.count(answer) > len(model_answers) / 2
 
 
-def eval_single_question(output: str, answer: str, question_type) -> bool:
+def eval_single_question(
+    output: str, answer: str | int, question_type: QuestionType
+) -> bool:
     model_answer = extract_answer(output, question_type)
     logging.info(f"Model answer: {model_answer} | Ground truth answer: {answer}")
     return model_answer == answer

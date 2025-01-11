@@ -9,8 +9,11 @@ dependencies = [
     "litellm==1.54.1",
     "python-dotenv",
     "datasets",
-    "pathlib"
+    "pathlib",
+    "colorlog",
+    "rich"
 ]
+
 [[tool.mypy.overrides]]
 module = "datasets"
 ignore_missing_imports = true
@@ -18,3 +21,17 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "fire"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "colorlog"
+ignore_missing_imports = true
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+llm_eval = "src.app:app"
+
+[tool.setuptools.packages]
+find = { where = ["src"] }
