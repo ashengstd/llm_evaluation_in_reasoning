@@ -1,10 +1,10 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-version = "1.0.1.dev0"
+version = "1.0.2"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
 license = { file = "LICENSE" }
-# license = "MIT"
+
 authors = [
     {name = "Sheng Ren",email = "rensheng0410@gamil.com"},
     {name = "Xiya Pang",email = "sianing0531@gmail.com"}
@@ -17,7 +17,6 @@ dependencies = [
     "python-dotenv",
     "datasets",
     "pathlib",
-    "colorlog",
     "rich"
 ]
 
