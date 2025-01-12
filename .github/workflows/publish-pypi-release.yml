@@ -123,6 +123,10 @@ jobs:
         with:
           name: build-artifact
           path: dist/
+      - name: Create Git tag
+        run: |
+          git tag "v${{ github.event.inputs.version }}"
+          git push origin "v${{ github.event.inputs.version }}"
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
