@@ -1,6 +1,5 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-dynamic = [ "version",]
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
 requires-python = ">=3.11"
