@@ -3,13 +3,18 @@ name: Python Package CI/CD
 on:
   pull_request:
     branches:
-      - main  # 针对向 main 分支发起的 PR
+      - main # 针对向 main 分支发起的 PR
   workflow_dispatch: # 支持手动触发，允许输入版本号
+    inputs:
+      version:
+        description: "Enter the version to update (e.g., 1.0.0)"
+        required: true
+        type: string
   push:
     branches:
-      - dev  # 针对 dev 分支的自动版本递增
+      - dev # 针对 dev 分支的自动版本递增
     tags:
-      - 'v*' # 以 v 开头的 tag 推送触发发布流程
+      - "v*" # 以 v 开头的 tag 推送触发发布流程
 
 jobs:
   bump-dev-version:
