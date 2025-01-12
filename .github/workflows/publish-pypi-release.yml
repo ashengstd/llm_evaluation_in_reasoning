@@ -1,106 +1,16 @@
 name: Python Package CI/CD
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version:
         description: "Enter the version to update (e.g., 1.0.0)"
         required: true
         type: string
-  push:
-    branches:
-      - dev
-    tags:
-      - "v*"
 
 jobs:
-  bump-dev-version:
-    name: Increment Dev Version on dev branch
-    if: github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install toml
-      - name: Increment dev version
-        run: |
-          python <<EOF
-          import toml
-          import re
-          file_path = 'pyproject.toml'
-          with open(file_path, 'r') as f:
-              data = toml.load(f)
-          version = data['project']['version']
-          match = re.match(r'(\d+\.\d+\.\d+)(dev(\d+))?', version)
-          if match:
-              base_version = match.group(1)
-              dev_suffix = match.group(3)
-              if dev_suffix is None:
-                  new_version = f"{base_version}dev1"
-              else:
-                  new_version = f"{base_version}dev{int(dev_suffix) + 1}"
-              data['project']['version'] = new_version
-              with open(file_path, 'w') as f:
-                  toml.dump(data, f)
-              print(f"Bumped version to: {new_version}")
-          EOF
-      - name: Commit updated version
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add pyproject.toml
-          git commit -m "Bump dev version [skip ci]"
-          git push
-
-  bump-main-version:
-    name: Manually Increment Main Version
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install toml
-      - name: Bump main version
-        run: |
-          version="${{ github.event.inputs.version }}"
-          if [ -z "$version" ]; then
-            echo "Error: version input is required for manual bump."
-            exit 1
-          fi
-          python <<EOF
-          import toml
-          file_path = 'pyproject.toml'
-          with open(file_path, 'r') as f:
-              data = toml.load(f)
-          data['project']['version'] = '${{ github.event.inputs.version }}'
-          with open(file_path, 'w') as f:
-              toml.dump(data, f)
-          print(f"Updated version to: ${{ github.event.inputs.version }}")
-          EOF
-      - name: Commit updated version
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add pyproject.toml
-          git commit -m "Update main version to ${{ github.event.inputs.version }} [skip ci]"
-          git push
-
   publish-manually:
     name: Publish to GitHub Release and PyPI (Manually)
-    needs: bump-main-version
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
@@ -140,6 +50,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*
+          tag_name: v${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish to PyPI
