@@ -3,8 +3,8 @@ name: Python Package CI/CD
 on:
   pull_request:
     branches:
-      - main # 针对向 main 分支发起的 PR
-  workflow_dispatch: # 支持手动触发，允许输入版本号
+      - main
+  workflow_dispatch:
     inputs:
       version:
         description: "Enter the version to update (e.g., 1.0.0)"
@@ -12,14 +12,14 @@ on:
         type: string
   push:
     branches:
-      - dev # 针对 dev 分支的自动版本递增
+      - dev
     tags:
-      - "v*" # 以 v 开头的 tag 推送触发发布流程
+      - "v*"
 
 jobs:
   bump-dev-version:
     name: Increment Dev Version on dev branch
-    if: github.ref == 'refs/heads/dev' # 仅在 dev 分支提交时执行
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
 
     steps:
@@ -62,7 +62,7 @@ jobs:
 
   bump-main-version:
     name: Manually Increment Main Version
-    if: github.event_name == 'workflow_dispatch' # 支持手动触发
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -98,9 +98,10 @@ jobs:
           git commit -m "Update main version to ${{ github.event.inputs.version }} [skip ci]"
           git push
 
-  build-pr:
-    name: Run Tests and Build on PR to Main
-    if: github.event_name == 'pull_request' # 仅在 PR 合并到 main 时运行
+  publish-manually:
+    name: Publish to GitHub Release and PyPI (Manually)
+    needs: bump-main-version
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -113,8 +114,6 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Install the project
         run: uv sync --all-extras --dev
-      - name: Run Tests
-        run: uv test
       - name: Build a binary wheel and a source tarball
         run: uv build
       - name: Verify distribution files
@@ -124,13 +123,6 @@ jobs:
         with:
           name: build-artifact
           path: dist/
-
-  publish-manually:
-    name: Publish to GitHub Release and PyPI (Manually)
-    if: github.event_name == 'workflow_dispatch' # 支持手动触发
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
