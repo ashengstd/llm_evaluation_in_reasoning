@@ -1,0 +1,143 @@
+name: Python Package CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main  # 针对向 main 分支发起的 PR
+  workflow_dispatch: # 支持手动触发，允许输入版本号
+  push:
+    branches:
+      - dev  # 针对 dev 分支的自动版本递增
+    tags:
+      - 'v*' # 以 v 开头的 tag 推送触发发布流程
+
+jobs:
+  bump-dev-version:
+    name: Increment Dev Version on dev branch
+    if: github.ref == 'refs/heads/dev' # 仅在 dev 分支提交时执行
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install toml
+      - name: Increment dev version
+        run: |
+          python <<EOF
+          import toml
+          import re
+          file_path = 'pyproject.toml'
+          with open(file_path, 'r') as f:
+              data = toml.load(f)
+          version = data['project']['version']
+          match = re.match(r'(\d+\.\d+\.\d+)(dev(\d+))?', version)
+          if match:
+              base_version = match.group(1)
+              dev_suffix = match.group(3)
+              if dev_suffix is None:
+                  new_version = f"{base_version}dev1"
+              else:
+                  new_version = f"{base_version}dev{int(dev_suffix) + 1}"
+              data['project']['version'] = new_version
+              with open(file_path, 'w') as f:
+                  toml.dump(data, f)
+              print(f"Bumped version to: {new_version}")
+          EOF
+      - name: Commit updated version
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pyproject.toml
+          git commit -m "Bump dev version [skip ci]"
+          git push
+
+  bump-main-version:
+    name: Manually Increment Main Version
+    if: github.event_name == 'workflow_dispatch' # 支持手动触发
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install toml
+      - name: Bump main version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          if [ -z "$version" ]; then
+            echo "Error: version input is required for manual bump."
+            exit 1
+          fi
+          python <<EOF
+          import toml
+          file_path = 'pyproject.toml'
+          with open(file_path, 'r') as f:
+              data = toml.load(f)
+          data['project']['version'] = '${{ github.event.inputs.version }}'
+          with open(file_path, 'w') as f:
+              toml.dump(data, f)
+          print(f"Updated version to: ${{ github.event.inputs.version }}")
+          EOF
+      - name: Commit updated version
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pyproject.toml
+          git commit -m "Update main version to ${{ github.event.inputs.version }} [skip ci]"
+          git push
+
+  build-pr:
+    name: Run Tests and Build on PR to Main
+    if: github.event_name == 'pull_request' # 仅在 PR 合并到 main 时运行
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install the project
+        run: uv sync --all-extras --dev
+      - name: Run Tests
+        run: uv test
+      - name: Build a binary wheel and a source tarball
+        run: uv build
+      - name: Verify distribution files
+        run: ls -R dist/
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: dist/
+
+  publish-manually:
+    name: Publish to GitHub Release and PyPI (Manually)
+    if: github.event_name == 'workflow_dispatch' # 支持手动触发
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: dist/
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
