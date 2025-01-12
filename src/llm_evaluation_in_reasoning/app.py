@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 from datetime import datetime
-from enum import Enum
 from pathlib import Path
 from typing import Callable, List, Literal
 
@@ -12,6 +11,7 @@ import rich.progress
 from fire import Fire
 
 from llm_evaluation_in_reasoning.data.dataloader import (
+    GSM8K,
     BaseBenchDataloader,
     GSMSymbolic,
     SimpleBenchDataloader,
@@ -23,14 +23,13 @@ from llm_evaluation_in_reasoning.eval.scorer import (
     eval_single_question,
 )
 
-
-class LOGGER_LEVEL(Enum):
-    DEBUG = logging.DEBUG
-    INFO = logging.INFO
-    WARNING = logging.WARNING
-    ERROR = logging.ERROR
-    CRITICAL = logging.CRITICAL
-
+LOGGER_LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRTICAL": logging.CRITICAL,
+}
 
 RichHander = rich.logging.RichHandler()
 ProgressBar = rich.progress.Progress(
@@ -73,15 +72,15 @@ def run_benchmark(
     top_p: float = 0.95,
     max_retries: int = 3,
     system_prompt_path: str = "system_prompt.json",
-    logging_level: LOGGER_LEVEL = LOGGER_LEVEL.INFO,
+    logging_level: Literal["INFO", "DEBUG", "ERROR", "WARNING", "CRITICAL"] = "INFO",
+    type: str = "main",
+    split: Literal["train", "test"] = "test",
 ):
     # config log
-    if logging_level not in LOGGER_LEVEL:
-        raise ValueError(f"Invalid logging level: {logging_level}")
-    if logging_level == LOGGER_LEVEL.DEBUG:
+    if logging_level == "DEBUG":
         litellm.set_verbose = True
     logging.basicConfig(
-        level=logging_level.value,
+        level=LOGGER_LEVEL_MAP[logging_level],
         format="%(asctime)s - %(levelname)s - %(message)s",
         handlers=[RichHander],
     )
@@ -98,7 +97,9 @@ def run_benchmark(
             )
             pass
         case "GSM-Symbolic":
-            dataset = GSMSymbolic(progress=ProgressBar)
+            dataset = GSMSymbolic(progress=ProgressBar, type=type, split=split)
+        case "GSM8K":
+            dataset = GSM8K(progress=ProgressBar, type=type, split=split)
 
     logging.info(f"Loaded {len(dataset)} examples from {dataset_path}")
 

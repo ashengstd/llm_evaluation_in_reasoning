@@ -25,9 +25,6 @@ class BaseBenchDataloader(ABC):
     def __len__(self) -> int:
         return len(self.dataset)
 
-    # @abstractmethod
-    # async def evaluate_model(self, model, scorer, question_type) -> Any:
-    #     pass
     async def evaluate_model(
         self,
         model: LiteLLMModel | MajorityVoteModel,
@@ -80,13 +77,25 @@ class SimpleBenchDataloader(BaseBenchDataloader):
 
 
 class HFDataloader(BaseBenchDataloader, ABC):
-    def __init__(self, path: str, progress: rich.progress.Progress):
-        self.dataset = load_dataset(path=path)
+    def __init__(
+        self,
+        path: str,
+        name: str,
+        split: Literal["test", "train"] = "test",
+        progress: rich.progress.Progress = rich.progress.Progress(),
+    ):
+        self.dataset: DatasetDict = load_dataset(path=path, name=name, split=split)
+        self.dataset = self.dataset["test"]
         self.progress_bar = progress
+        self.question_key = "question"
+        self.question_type = QuestionType.BLANK_FILL
+        self.answer_key = "answer"
+        extract_with_params = partial(answer2int, anwser_key=self.answer_key)
+        self.dataset = self.dataset.map(extract_with_params)
 
 
 def answer2int(example: Dataset, anwser_key) -> int:
-    answer_text = example[anwser_key]  # 假设列名为 answers
+    answer_text = example[anwser_key]
     match = re.search(r"####\s*(\d+)", answer_text)
     if match:
         example[anwser_key] = int(match.group(1))
@@ -99,10 +108,30 @@ class GSMSymbolic(HFDataloader):
     def __init__(
         self,
         type: Literal["main", "p1", "p2"] = "main",
+        split: Literal["test", "train"] = "test",
         progress: rich.progress.Progress = rich.progress.Progress(),
     ):
-        self.dataset: DatasetDict = load_dataset(path="apple/GSM-Symbolic", name=type)
-        self.dataset = self.dataset["test"]
+        self.dataset: DatasetDict = load_dataset(
+            path="apple/GSM-Symbolic", name=type, split=split
+        )
+        self.progress_bar = progress
+        self.question_key = "question"
+        self.question_type = QuestionType.BLANK_FILL
+        self.answer_key = "answer"
+        extract_with_params = partial(answer2int, anwser_key=self.answer_key)
+        self.dataset = self.dataset.map(extract_with_params)
+
+
+class GSM8K(HFDataloader):
+    def __init__(
+        self,
+        type: Literal["main", "socratic"] = "main",
+        split: Literal["test", "train"] = "test",
+        progress: rich.progress.Progress = rich.progress.Progress(),
+    ):
+        self.dataset: DatasetDict = load_dataset(
+            path="openai/gsm8k", name=type, split=split
+        )
         self.progress_bar = progress
         self.question_key = "question"
         self.question_type = QuestionType.BLANK_FILL

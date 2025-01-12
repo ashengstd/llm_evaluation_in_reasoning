@@ -104,6 +104,7 @@ class LiteLLMModel(BaseModel[str]):
                     temperature=self.temp,
                     max_tokens=self.max_tokens,
                     top_p=self.top_p,
+                    logger_fn=None,
                 )
 
                 if response.choices[0].message.content is not None:
