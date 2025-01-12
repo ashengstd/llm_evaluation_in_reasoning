@@ -127,6 +127,10 @@ jobs:
         run: |
           git tag "v${{ github.event.inputs.version }}"
           git push origin "v${{ github.event.inputs.version }}"
+      - name: Wait for tag to be pushed
+        run: |
+          # Wait a few seconds to ensure tag is available before proceeding
+          sleep 5
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
