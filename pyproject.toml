@@ -1,25 +1,32 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-version = "1.0.2"
+version = "1.0.2dev1"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
-license = { file = "LICENSE" }
-
-authors = [
-    {name = "Sheng Ren",email = "rensheng0410@gamil.com"},
-    {name = "Xiya Pang",email = "sianing0531@gmail.com"}
-]
-
 requires-python = ">=3.11"
-dependencies = [
-    "fire",
-    "litellm==1.54.1",
-    "python-dotenv",
-    "datasets",
-    "pathlib",
-    "rich"
-]
+dependencies = [ "fire", "litellm==1.54.1", "python-dotenv", "datasets", "pathlib", "rich",]
+[[project.authors]]
+name = "Sheng Ren"
+email = "rensheng0410@gamil.com"
 
+[[project.authors]]
+name = "Xiya Pang"
+email = "sianing0531@gmail.com"
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [ "hatch",]
+
+[project.license]
+file = "LICENSE"
+
+[project.scripts]
+llm_eval = "llm_evaluation_in_reasoning.app:app"
+
+[tool.mypy]
 [[tool.mypy.overrides]]
 module = "datasets"
 ignore_missing_imports = true
@@ -32,20 +39,8 @@ ignore_missing_imports = true
 module = "colorlog"
 ignore_missing_imports = true
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[dependency-groups]
-dev = [
-    "hatch",
-]
+[tool.uv.workspace]
+members = [ "llm_evaluation_in_reasoning",]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/llm_evaluation_in_reasoning"]
-
-[tool.uv.workspace]
-members = ["llm_evaluation_in_reasoning"]
-
-[project.scripts]
-llm_eval = "llm_evaluation_in_reasoning.app:app"
+packages = [ "src/llm_evaluation_in_reasoning",]
