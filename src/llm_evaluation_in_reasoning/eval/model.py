@@ -33,6 +33,7 @@ from openai import RateLimitError
 
 load_dotenv()
 
+# Map model names to their corresponding model IDs, see it in litellm docs: https://docs.litellm.ai/docs/providers
 MODEL_MAP = {
     "gpt-4o-mini": "gpt-4o-mini",
     "claude-3-5-sonnet-20240620": "claude-3-5-sonnet-20240620",
