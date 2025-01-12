@@ -13,6 +13,44 @@ permissions:
   id-token: write
 
 jobs:
+  bump-main-version:
+    name: Manually Increment Main Version
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install toml
+      - name: Bump main version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          if [ -z "$version" ]; then
+            echo "Error: version input is required for manual bump."
+            exit 1
+          fi
+          python <<EOF
+          import toml
+          file_path = 'pyproject.toml'
+          with open(file_path, 'r') as f:
+              data = toml.load(f)
+          data['project']['version'] = '${{ github.event.inputs.version }}'
+          with open(file_path, 'w') as f:
+              toml.dump(data, f)
+          print(f"Updated version to: ${{ github.event.inputs.version }}")
+          EOF
+      - name: Commit updated version
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add pyproject.toml
+          git commit -m "Update main version to ${{ github.event.inputs.version }} [skip ci]"
+          git push
+
   publish-manually:
     name: Publish to GitHub Release and PyPI (Manually)
     if: github.event_name == 'workflow_dispatch'
