@@ -18,7 +18,11 @@ requires = [ "hatchling",]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [ "hatch", "jupyter>=1.1.1",]
+dev = [
+ "hatch",
+ "jupyter",
+ "pre-commit"
+]
 
 [project.license]
 file = "LICENSE"
