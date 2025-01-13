@@ -4,7 +4,7 @@ description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [ "fire", "litellm==1.54.1", "python-dotenv", "datasets", "pathlib", "rich",]
-version = "1.1.11"
+version = "1.1.2"
 [[project.authors]]
 name = "Sheng Ren"
 email = "rensheng0410@gamil.com"
@@ -18,10 +18,7 @@ requires = [ "hatchling",]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
- "hatch",
- "jupyter>=1.1.1",
-]
+dev = [ "hatch", "jupyter>=1.1.1",]
 
 [project.license]
 file = "LICENSE"
