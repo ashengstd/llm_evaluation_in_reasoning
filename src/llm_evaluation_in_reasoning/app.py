@@ -16,11 +16,14 @@ from llm_evaluation_in_reasoning.data.dataloader import (
     GSMSymbolic,
     SimpleBenchDataloader,
 )
-from llm_evaluation_in_reasoning.data.question import QuestionType
-from llm_evaluation_in_reasoning.eval.model import LiteLLMModel, MajorityVoteModel
+from llm_evaluation_in_reasoning.data.question import (
+    QUESTION_TYPE_PROMPT_MAP,
+    QuestionType,
+)
+from llm_evaluation_in_reasoning.eval.model import EvalModel, MajorityVoteModel
 from llm_evaluation_in_reasoning.eval.scorer import (
     eval_majority_vote,
-    eval_single_question,
+    eval_question_once,
 )
 
 LOGGER_LEVEL_MAP = {
@@ -62,20 +65,36 @@ def load_system_prompt(
 
 def run_benchmark(
     model_name: str = "op-qwen-2.5-0.5b",
-    dataset_path: Literal[
-        "simple_bench_public.json", "GSM-Symbolic"
-    ] = "simple_bench_public.json",
+    dataset_path: Literal["simple_bench_public.json", "GSM-Symbolic"] = "GSM-Symbolic",
     num_responses: int = 1,
     output_dir: str = "results",
     temp: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     max_retries: int = 3,
-    system_prompt_path: str = "system_prompt.json",
     logging_level: Literal["INFO", "DEBUG", "ERROR", "WARNING", "CRITICAL"] = "INFO",
     type: str = "main",
     split: Literal["train", "test"] = "test",
+    custom_prompt: str | Path | None = None,
 ):
+    """
+    Run evaluation benchmark on the specified model and dataset
+    with the given parameters
+    params:
+        model_name: str - name of the model to evaluate
+        dataset_path: str - path to the dataset to evaluate on
+        num_responses: int - number of responses to collect for majority vote
+        output_dir: str - directory to save results
+        temp: float - temperature parameter for model
+        max_tokens: int - maximum tokens for model
+        top_p: float - top p parameter for model
+        max_retries: int - maximum retries for model
+        system_prompt_path: str - path to system prompt json file
+        logging_level: str - logging level
+        type: str - type of GSM-Symbolic dataset
+        split: str - split of GSM-Symbolic dataset
+        custom_prompt: str | Path | None - custom system prompt
+    """
     # config log
     if logging_level == "DEBUG":
         litellm.set_verbose = True
@@ -104,11 +123,17 @@ def run_benchmark(
     logging.info(f"Loaded {len(dataset)} examples from {dataset_path}")
 
     # load system prompt
-    system_prompt = load_system_prompt(system_prompt_path, QuestionType.MULTIPLE_CHOICE)
-
-    # initialize model and scorer
-    model: LiteLLMModel | MajorityVoteModel
-    model = LiteLLMModel(
+    if custom_prompt is not None:
+        if isinstance(custom_prompt, Path):
+            custom_prompt = custom_prompt.read_text()
+        elif isinstance(custom_prompt, str):
+            system_prompt = custom_prompt
+        system_prompt = custom_prompt
+    else:
+        system_prompt = QUESTION_TYPE_PROMPT_MAP[dataset.question_type]
+    # initialize eval model and scorer
+    model: EvalModel | MajorityVoteModel
+    model = EvalModel(
         model_name=model_name,
         temp=temp,
         max_tokens=max_tokens,
@@ -121,7 +146,7 @@ def run_benchmark(
         model = MajorityVoteModel(model=model, num_responses=num_responses)
         scorer = eval_majority_vote
     else:
-        scorer = eval_single_question
+        scorer = eval_question_once
 
     # run evaluation
     logging.info(f"Starting evaluation with model: {model_name}")

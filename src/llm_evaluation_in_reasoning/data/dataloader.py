@@ -10,7 +10,7 @@ import rich.progress
 from datasets import Dataset, DatasetDict, load_dataset
 
 from llm_evaluation_in_reasoning.data.question import QuestionType
-from llm_evaluation_in_reasoning.eval.model import LiteLLMModel, MajorityVoteModel
+from llm_evaluation_in_reasoning.eval.model import EvalModel, MajorityVoteModel
 
 
 class BaseBenchDataloader(ABC):
@@ -27,7 +27,7 @@ class BaseBenchDataloader(ABC):
 
     async def evaluate_model(
         self,
-        model: LiteLLMModel | MajorityVoteModel,
+        model: EvalModel | MajorityVoteModel,
         scorer: Callable[[str | List[str], str | int, QuestionType], bool],
     ) -> tuple[List[dict], float]:
         results: List[dict] = []
@@ -90,11 +90,11 @@ class HFDataloader(BaseBenchDataloader, ABC):
         self.question_key = "question"
         self.question_type = QuestionType.BLANK_FILL
         self.answer_key = "answer"
-        extract_with_params = partial(answer2int, anwser_key=self.answer_key)
+        extract_with_params = partial(answer2int_gsm, anwser_key=self.answer_key)
         self.dataset = self.dataset.map(extract_with_params)
 
 
-def answer2int(example: Dataset, anwser_key) -> int:
+def answer2int_gsm(example: Dataset, anwser_key: str) -> int:
     answer_text = example[anwser_key]
     match = re.search(r"####\s*(\d+)", answer_text)
     if match:
@@ -118,7 +118,9 @@ class GSMSymbolic(HFDataloader):
         self.question_key = "question"
         self.question_type = QuestionType.BLANK_FILL
         self.answer_key = "answer"
-        extract_with_params = partial(answer2int, anwser_key=self.answer_key)
+        extract_with_params: Callable = partial(
+            answer2int_gsm, anwser_key=self.answer_key
+        )
         self.dataset = self.dataset.map(extract_with_params)
 
 
@@ -136,5 +138,5 @@ class GSM8K(HFDataloader):
         self.question_key = "question"
         self.question_type = QuestionType.BLANK_FILL
         self.answer_key = "answer"
-        extract_with_params = partial(answer2int, anwser_key=self.answer_key)
+        extract_with_params = partial(answer2int_gsm, anwser_key=self.answer_key)
         self.dataset = self.dataset.map(extract_with_params)

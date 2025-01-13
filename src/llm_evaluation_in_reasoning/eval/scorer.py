@@ -71,7 +71,7 @@ def eval_majority_vote(
     return model_answers.count(answer) > len(model_answers) / 2
 
 
-def eval_single_question(
+def eval_question_once(
     output: str, answer: str | int, question_type: QuestionType
 ) -> bool:
     model_answer = extract_answer(output, question_type)
