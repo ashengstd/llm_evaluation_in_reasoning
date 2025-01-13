@@ -4,7 +4,7 @@ description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [ "fire", "litellm==1.54.1", "python-dotenv", "datasets", "pathlib", "rich",]
-version = "1.1.2"
+version = "1.2.0"
 [[project.authors]]
 name = "Sheng Ren"
 email = "rensheng0410@gamil.com"
