@@ -2,8 +2,17 @@
 name = "llm_evaluation_in_reasoning"
 description = "A project for the evaluation of reasoning in the LLM"
 readme = "README.md"
+keywords = [ "llm", "evaluation", "reasoning",]
 requires-python = ">=3.11"
-dependencies = [ "fire", "litellm==1.54.1", "python-dotenv", "datasets", "pathlib", "rich",]
+dependencies = [
+ "fire",
+ "litellm==1.54.1",
+ "python-dotenv",
+ "datasets",
+ "pathlib",
+ "rich",
+ "sympy",
+]
 version = "1.2.0"
 [[project.authors]]
 name = "Sheng Ren"
@@ -29,19 +38,6 @@ file = "LICENSE"
 
 [project.scripts]
 llm_eval = "llm_evaluation_in_reasoning.app:app"
-
-[tool.mypy]
-[[tool.mypy.overrides]]
-module = "datasets"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "fire"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "colorlog"
-ignore_missing_imports = true
 
 [tool.uv.workspace]
 members = [ "llm_evaluation_in_reasoning",]

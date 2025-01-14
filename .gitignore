@@ -171,3 +171,6 @@ simplev2.csv
 
 # ruff
 .ruff_cache/
+
+# vscode
+.vscode/

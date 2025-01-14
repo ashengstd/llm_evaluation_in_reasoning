@@ -18,6 +18,7 @@ exclude = [
     ".tox",
     ".venv",
     ".vscode",
+    ".env",
     "__pypackages__",
     "_build",
     "buck-out",

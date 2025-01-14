@@ -69,7 +69,7 @@ class BaseModel(ABC, Generic[T]):
         pass
 
 
-class EvalModel(BaseModel[str]):
+class LiteLLM_Model(BaseModel[str]):
     def __init__(
         self,
         model_name: str,
@@ -117,13 +117,13 @@ class EvalModel(BaseModel[str]):
             except RateLimitError as e:
                 delay *= EXPONENTIAL_BASE * (1 + random.random())
                 logging.warning(
-                    f"RateLimitError, retrying after {round(delay, 2)} seconds, {i+1}-th retry...",
+                    f"RateLimitError, retrying after {round(delay, 2)} seconds, {i + 1}-th retry...",
                     e,
                 )
                 await asyncio.sleep(delay)
                 continue
             except Exception as e:
-                logging.warning(f"Error in retry {i+1}, retrying...", e)
+                logging.warning(f"Error in retry {i + 1}, retrying...", e)
                 continue
         logging.error(f"Failed to get response after {self.max_retries} retries")
         raise Exception("Failed to get response after max retries")
