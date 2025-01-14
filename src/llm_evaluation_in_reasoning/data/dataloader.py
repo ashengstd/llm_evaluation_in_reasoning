@@ -53,7 +53,7 @@ class BaseBenchDataloader(ABC):
                         total_correct += 1
                     progress.update(task, advance=1)
                     logging.info(
-                        f"Progress: {i+1}/{len(self.dataset)} - Accuracy: {total_correct/(i+1):.2%}"
+                        f"Progress: {i + 1}/{len(self.dataset)} - Accuracy: {total_correct / (i + 1):.2%}"
                     )
 
                 except Exception as e:
@@ -140,3 +140,25 @@ class GSM8K(HFDataloader):
         self.answer_key = "answer"
         extract_with_params = partial(answer2int_gsm, anwser_key=self.answer_key)
         self.dataset = self.dataset.map(extract_with_params)
+
+
+class Putnam(HFDataloader):
+    def __init__(
+        self,
+        split: Literal[
+            "full_original_236_10_30_2024",
+            "func_original_53_10_30_2024",
+            "func_variations_265_11_23_2024",
+        ],
+        progress: rich.progress.Progress = rich.progress.Progress(),
+    ):
+        self.dataset: DatasetDict = load_dataset(
+            path="Putnam-AXIOM/putnam-axiom-dataset", split=split
+        )
+        self.progress_bar = progress
+        self.question_key = "question"
+        self.question_type = QuestionType.BLANK_FILL
+        self.answer_key = "answer"
+        extract_with_params = partial(answer2int_gsm, anwser_key=self.answer_key)
+        self.dataset = self.dataset.map(extract_with_params)
+        a = 1
