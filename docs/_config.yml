@@ -1,0 +1,9 @@
+title: llm_evaluation_in_reasoning docs
+description: A documentation site for the llm_evaluation_in_reasoning project.
+theme: just-the-docs
+
+url: https://ashengstd.github.io/llm_evaluation_in_reasoning/
+
+aux_links:
+  Template Repository: https://github.com/just-the-docs/just-the-docs-template
+  Project Repository: https://github.com/ashengstd/llm_evaluation_in_reasoning/
