@@ -1,7 +1,7 @@
 ---
 title: BaseBenchDataloader Documentation
 layout: default
-parent: apis
+parent: API
 nav_layout: 1
 ---
 
