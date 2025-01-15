@@ -37,8 +37,8 @@ ProgressBar = rich.progress.Progress(
 
 
 def run_benchmark(
-    model_name: str = "op-qwen-2.5-0.5b",
-    dataset: Literal["SimpleBench", "GSM-Symbolic", "GSM8K", "MMLU"] = "GSM-Symbolic",
+    model_name: str | None = None,
+    dataset: Literal["SimpleBench", "GSM-Symbolic", "GSM8K", "MMLU"] | None = None,
     num_responses: int = 1,
     output_dir: str = "results",
     temp: float = 0.9,
@@ -47,7 +47,7 @@ def run_benchmark(
     max_retries: int = 3,
     logging_level: Literal["INFO", "DEBUG", "ERROR", "WARNING", "CRITICAL"] = "INFO",
     type: str = "main",
-    split: Literal["train", "test"] = "test",
+    split: str = "test",
     # putnam_prompt_type: Literal[
     #     "", "general_few_shot_prompt"
     # ] = "general_few_shot_prompt",
@@ -57,7 +57,7 @@ def run_benchmark(
     Run evaluation benchmark on the specified model and dataset
     with the given parameters
     params:
-        model_name: str - name of the model to evaluate
+        model_name: str - name of the model to evaluate, follow litellm’s model name specification
         dataset: str - name to the dataset to evaluate on
         num_responses: int - number of responses to collect for majority vote
         output_dir: str - directory to save results
@@ -71,6 +71,11 @@ def run_benchmark(
         split: str - split of GSM-Symbolic dataset
         custom_prompt: str | Path | None - custom system prompt
     """
+    # check args
+    if model_name is None:
+        logging.error("Model name is required")
+        raise ValueError("Model name is required")
+
     # config log
     if logging_level == "DEBUG":
         litellm.set_verbose = True
@@ -150,7 +155,7 @@ def run_benchmark(
     logging.info(f"Results saved to: {result_file}")
 
 
-def app():
+def app() -> None:
     Fire(run_benchmark)
 
 

@@ -29,33 +29,34 @@ from typing import Generic, List, Optional, TypeVar
 
 from dotenv import load_dotenv
 from litellm import acompletion
+from litellm.utils import get_valid_models
 from openai import RateLimitError
 
 load_dotenv()
 
 # Map model names to their corresponding model IDs, see it in litellm docs: https://docs.litellm.ai/docs/providers
-MODEL_MAP = {
-    "gpt-4o-mini": "gpt-4o-mini",
-    "claude-3-5-sonnet-20240620": "claude-3-5-sonnet-20240620",
-    "gpt-4o": "gpt-4o-2024-08-06",
-    "gpt-4-turbo": "gpt-4-turbo",
-    "o1-preview": "o1-preview",
-    "o1-mini": "o1-mini",
-    "claude-3-opus-20240229": "claude-3-opus-20240229",
-    "command-r-plus": "command-r-plus-08-2024",
-    "gemini-1.5-pro": "gemini/gemini-1.5-pro",
-    "gemini-2.0-flash": "gemini/gemini-2.0-flash-exp",
-    "llama3-405b-instruct": "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct",
-    "claude-3-haiku": "claude-3-haiku-20240307",
-    "gemini-1.5-pro-002": "gemini/gemini-1.5-pro-002",
-    "mistral-large": "mistral/mistral-large-2407",
-    "grok-2": "openrouter/x-ai/grok-2",
-    "op-qwen-2.5-0.5b": "ollama/qwen2.5:0.5b",
-    "op-qwen-2.5-7b": "ollama/qwen2.5:7b",
-    "op-deepseek-v3": "openrouter/deepseek/deepseek-chat",
-    "op-gemini-2.0-flash-free": "openrouter/google/gemini-2.0-flash-thinking-exp:free",
-    "op-o1-preview": "openrouter/openai/o1-preview",
-}
+# MODEL_MAP = {
+#     "gpt-4o-mini": "gpt-4o-mini",
+#     "claude-3-5-sonnet-20240620": "claude-3-5-sonnet-20240620",
+#     "gpt-4o": "gpt-4o-2024-08-06",
+#     "gpt-4-turbo": "gpt-4-turbo",
+#     "o1-preview": "o1-preview",
+#     "o1-mini": "o1-mini",
+#     "claude-3-opus-20240229": "claude-3-opus-20240229",
+#     "command-r-plus": "command-r-plus-08-2024",
+#     "gemini-1.5-pro": "gemini/gemini-1.5-pro",
+#     "gemini-2.0-flash": "gemini/gemini-2.0-flash-exp",
+#     "llama3-405b-instruct": "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct",
+#     "claude-3-haiku": "claude-3-haiku-20240307",
+#     "gemini-1.5-pro-002": "gemini/gemini-1.5-pro-002",
+#     "mistral-large": "mistral/mistral-large-2407",
+#     "grok-2": "openrouter/x-ai/grok-2",
+#     "op-qwen-2.5-0.5b": "ollama/qwen2.5:0.5b",
+#     "op-qwen-2.5-7b": "ollama/qwen2.5:7b",
+#     "op-deepseek-v3": "openrouter/deepseek/deepseek-chat",
+#     "op-gemini-2.0-flash-free": "openrouter/google/gemini-2.0-flash-thinking-exp:free",
+#     "op-o1-preview": "openrouter/openai/o1-preview",
+# }
 
 EXPONENTIAL_BASE = 2
 
@@ -79,8 +80,15 @@ class LiteLLM_Model(BaseModel[str]):
         top_p: float = 0.95,
         max_retries: int = 3,
     ):
-        if model_name not in MODEL_MAP:
-            raise ValueError(f"Invalid model name: {model_name}")
+        self.vaild_model_list = get_valid_models()
+        if model_name not in self.vaild_model_list:
+            if not model_name.startswith("ollama/"):
+                logging.error(
+                    f"Invalid model name: {model_name} or the api key for the model is invalid"
+                )
+                raise ValueError(
+                    f"Invalid model name: {model_name} or the api key for the model is invalid"
+                )
 
         self.model_name = model_name
         self.system_prompt = system_prompt
@@ -100,7 +108,7 @@ class LiteLLM_Model(BaseModel[str]):
                 messages.append({"role": "user", "content": prompt})
                 logging.debug(f"Sending prompt to model: {prompt}")
                 response = await acompletion(
-                    model=MODEL_MAP[self.model_name],
+                    model=self.model_name,
                     messages=messages,
                     temperature=self.temp,
                     max_tokens=self.max_tokens,
