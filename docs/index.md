@@ -1,6 +1,6 @@
 ---
 title: LLM_EVAL
-layout: Docs
+layout: home
 ---
 
 # llm_evaluation_in_reasoning
