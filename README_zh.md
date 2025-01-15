@@ -1,9 +1,9 @@
 # llm_evaluation_in_reasoning
 
-![example workflow](https://github.com/ashengstd/llm_evaluation_in_reasoning/actions/workflows/publish-pypi-release.yml/badge.svg) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/llm_evaluation_in_reasoning)](https://pypi.org/project/llm_evaluation_in_reasoning) [![PyPI](https://img.shields.io/pypi/v/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) ![PyPI - Downloads](https://img.shields.io/pypi/dm/llm_evaluation_in_reasoning.svg) ![GitHub License](https://img.shields.io/github/license/ashengstd/llm_evaluation_in_reasoning) ![GitHub Release](https://img.shields.io/github/v/release/ashengstd/llm_evaluation_in_reasoning)
+[![example workflow](https://github.com/ashengstd/llm_evaluation_in_reasoning/actions/workflows/publish-pypi-release.yml/badge.svg)](https://github.com/ashengstd/llm_evaluation_in_reasoning) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/llm_evaluation_in_reasoning)](https://pypi.org/project/llm_evaluation_in_reasoning) [![PyPI](https://img.shields.io/pypi/v/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) [![GitHub License](https://img.shields.io/github/license/ashengstd/llm_evaluation_in_reasoning)](https://github.com/ashengstd/llm_evaluation_in_reasoning) [![GitHub Release](https://img.shields.io/github/v/release/ashengstd/llm_evaluation_in_reasoning)](https://github.com/ashengstd/llm_evaluation_in_reasoning)
 
 一个用于评估 LLM 推理能力的项目。
-**其他语言版本: [English](README.md), [中文](README_zh.md).**
+**其他语言版本: [English](https://github.com/ashengstd/llm_evaluation_in_reasoning/blob/main/README.md), [中文](https://github.com/ashengstd/llm_evaluation_in_reasoning/blob/main/README_zh.md).**
 
 ## 运行评估
 

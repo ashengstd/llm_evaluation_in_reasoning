@@ -1,9 +1,10 @@
 # llm_evaluation_in_reasoning
 
-![example workflow](https://github.com/ashengstd/llm_evaluation_in_reasoning/actions/workflows/publish-pypi-release.yml/badge.svg) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/llm_evaluation_in_reasoning)](https://pypi.org/project/llm_evaluation_in_reasoning) [![PyPI](https://img.shields.io/pypi/v/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) ![PyPI - Downloads](https://img.shields.io/pypi/dm/llm_evaluation_in_reasoning.svg) ![GitHub License](https://img.shields.io/github/license/ashengstd/llm_evaluation_in_reasoning) ![GitHub Release](https://img.shields.io/github/v/release/ashengstd/llm_evaluation_in_reasoning)
+[![example workflow](https://github.com/ashengstd/llm_evaluation_in_reasoning/actions/workflows/publish-pypi-release.yml/badge.svg)](https://github.com/ashengstd/llm_evaluation_in_reasoning) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/llm_evaluation_in_reasoning)](https://pypi.org/project/llm_evaluation_in_reasoning) [![PyPI](https://img.shields.io/pypi/v/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/llm_evaluation_in_reasoning.svg)](https://pypi.org/project/llm_evaluation_in_reasoning/) [![GitHub License](https://img.shields.io/github/license/ashengstd/llm_evaluation_in_reasoning)](https://github.com/ashengstd/llm_evaluation_in_reasoning) [![GitHub Release](https://img.shields.io/github/v/release/ashengstd/llm_evaluation_in_reasoning)](https://github.com/ashengstd/llm_evaluation_in_reasoning)
 
 A project for evaluating reasoning capabilities in large language models (LLMs).
-**Read this in other languages: [English](README.md), [中文](README_zh.md).**
+
+**Read this in other languages: [English](https://github.com/ashengstd/llm_evaluation_in_reasoning/blob/main/README.md), [中文](https://github.com/ashengstd/llm_evaluation_in_reasoning/blob/main/README_zh.md).**
 
 ## Run the eval
 
