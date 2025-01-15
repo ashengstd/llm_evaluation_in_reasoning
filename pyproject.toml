@@ -1,6 +1,6 @@
 [project]
 name = "llm_evaluation_in_reasoning"
-description = "A project for the evaluation of reasoning in the LLM"
+description = "A project for evaluating reasoning capabilities in large language models (LLMs)."
 readme = "README.md"
 keywords = [ "llm", "evaluation", "reasoning",]
 requires-python = ">=3.11"
