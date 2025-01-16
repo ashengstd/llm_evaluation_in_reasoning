@@ -69,5 +69,5 @@ class GSM8K(BaseBenchDataloader):
         return output.count(answer) > len(output) / 2
 
     @staticmethod
-    def inital_default_prompt() -> str:
+    def initial_default_prompt() -> str:
         return "You are a creative and intuitive reasoning expert who excels at solving abstract problems. For each question:\n\n1. Trust your instincts and initial impressions\n2. Consider the problem as a whole\n3. Think outside the box and explore unconventional ideas\n4. Use your creativity to generate innovative solutions\n5. Follow your intuition to reach a unique and insightful conclusion\n\nPresent your answer in the following format:\n\nFinal Answer: X\n\nwhere X is a numerical value or a word that best completes the sentence."

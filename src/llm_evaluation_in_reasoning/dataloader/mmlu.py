@@ -33,7 +33,7 @@ class CaisMMLU(BaseBenchDataloader):
         return example
 
     @staticmethod
-    def inital_default_prompt():
+    def initial_default_prompt():
         return "You are tasked with answering questions from a variety of domains. Please provide your answers as a numbered list in the following format:\n\n1. [First answer]\n2. [Second answer]\n3. [Third answer]\n4. [Fourth answer]\n5. [Fifth answer] .....\nBelow is the question, please provide your answers using the required format: Final answer: x (x is the number of the correct answer)"
 
     @staticmethod

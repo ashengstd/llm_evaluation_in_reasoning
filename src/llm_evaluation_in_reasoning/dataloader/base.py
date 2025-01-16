@@ -21,7 +21,7 @@ class BaseBenchDataloader(ABC):
         return len(self.dataset)
 
     @staticmethod
-    def inital_default_prompt() -> str:
+    def initial_default_prompt() -> str:
         return ""
 
     def process_question(self, example: dict) -> dict:
@@ -48,7 +48,7 @@ class BaseBenchDataloader(ABC):
         total_correct = 0
         if not system_prompt:
             logging.info("Evaluating model without default prompt")
-            system_prompt = self.inital_default_prompt()
+            system_prompt = self.initial_default_prompt()
         with self.progress_bar as progress:
             task = progress.add_task("Evaluating model", total=len(self.dataset))
             for i, example in enumerate(self.dataset):

@@ -30,13 +30,13 @@ Initializes a new instance of the `BaseBenchDataloader` class. This is an abstra
 
 ### Static Methods
 
-#### `inital_default_prompt()`
+#### `initial_default_prompt()`
 
 Returns the default system prompt for the evaluation.
 
 ```python
 @staticmethod
-def inital_default_prompt() -> str:
+def initial_default_prompt() -> str:
     return ""
 ```
 

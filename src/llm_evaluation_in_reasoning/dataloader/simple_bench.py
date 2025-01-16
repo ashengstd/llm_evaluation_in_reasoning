@@ -40,7 +40,7 @@ class SimpleBench(BaseBenchDataloader):
         logging.info(f"Output: {max_vote}, Ground truth: {answer}")
         return output.count(answer) > len(output) / 2
 
-    def inital_default_prompt(self) -> str:
+    def initial_default_prompt(self) -> str:
         return "You are a careful and systematic reasoning expert who excels at analyzing complex problems. For each question:\n\n1. Break down the problem into smaller components\n2. Evaluate each piece of evidence objectively\n3. Consider multiple perspectives and potential outcomes\n4. Assess the probability and practicality of each option\n5. Validate your reasoning process before concluding\n\nPresent your analysis in clear, logical steps. Support your reasoning with specific examples or evidence when possible. After your step-by-step analysis, provide your final answer in the following format:\n\nFinal Answer: X\n\nwhere X is one of the letters A, B, C, D, E, or F."
 
 
