@@ -29,7 +29,7 @@ from typing import Generic, List, Optional, TypeVar
 
 from dotenv import load_dotenv
 from litellm import acompletion
-from litellm.utils import get_valid_models
+from litellm.exceptions import BadRequestError
 from openai import RateLimitError
 
 load_dotenv()
@@ -56,16 +56,6 @@ class LiteLLM_Model(BaseModel[str]):
         top_p: float = 0.95,
         max_retries: int = 3,
     ):
-        self.vaild_model_list = get_valid_models()
-        if model_name not in self.vaild_model_list:
-            if not model_name.startswith("ollama/"):
-                logging.error(
-                    f"Invalid model name: {model_name} or the api key for the model is invalid"
-                )
-                raise ValueError(
-                    f"Invalid model name: {model_name} or the api key for the model is invalid"
-                )
-
         self.model_name = model_name
         self.system_prompt = system_prompt
         self.temp = None if "o1" in model_name else temp
@@ -83,15 +73,25 @@ class LiteLLM_Model(BaseModel[str]):
                     messages.append({"role": "system", "content": self.system_prompt})
                 messages.append({"role": "user", "content": prompt})
                 logging.debug(f"Sending prompt to model: {prompt}")
-                response = await acompletion(
-                    model=self.model_name,
-                    messages=messages,
-                    temperature=self.temp,
-                    max_tokens=self.max_tokens,
-                    top_p=self.top_p,
-                    logger_fn=None,
-                )
-
+                try:
+                    response = await acompletion(
+                        model=self.model_name,
+                        messages=messages,
+                        temperature=self.temp,
+                        max_tokens=self.max_tokens,
+                        top_p=self.top_p,
+                        logger_fn=None,
+                    )
+                except BadRequestError:
+                    logging.error(
+                        f"Invalid model name: {self.model_name} or the api key for the model is invalid"
+                    )
+                    raise Exception(
+                        f"Invalid model name: {self.model_name} or the api key for the model is invalid"
+                    )
+                except Exception as e:
+                    logging.error(f"Error in request: {e}")
+                    raise Exception(f"Error in request: {e}")
                 if response.choices[0].message.content is not None:
                     return response.choices[0].message.content
                 else:

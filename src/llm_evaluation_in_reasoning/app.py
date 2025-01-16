@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -67,8 +68,8 @@ def run_benchmark(
         max_retries: int - maximum retries for model
         system_prompt_path: str - path to system prompt json file
         logging_level: str - logging level
-        type: str - type of GSM-Symbolic dataset
-        split: str - split of GSM-Symbolic dataset
+        type: str - subset of the dataset
+        split: str - split of the dataset
         custom_prompt: str | Path | None - custom system prompt
     """
     # check args
@@ -138,6 +139,8 @@ def run_benchmark(
 
     # save results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    model_name = re.sub(r'[\\/:"*?<>|]', "_", model_name)
     result_file = Path(output_dir) / f"results_{model_name}_{timestamp}.json"
 
     output = {
