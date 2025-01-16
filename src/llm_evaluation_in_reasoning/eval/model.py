@@ -24,6 +24,7 @@
 import asyncio
 import logging
 import random
+import sys
 from abc import ABC, abstractmethod
 from typing import Generic, List, Optional, TypeVar
 
@@ -86,9 +87,11 @@ class LiteLLM_Model(BaseModel[str]):
                     logging.error(
                         f"Invalid model name: {self.model_name} or the api key for the model is invalid"
                     )
+                    sys.exit(1)
                     raise Exception(
                         f"Invalid model name: {self.model_name} or the api key for the model is invalid"
                     )
+                    sys.exit(1)
                 except Exception as e:
                     logging.error(f"Error in request: {e}")
                     raise Exception(f"Error in request: {e}")
