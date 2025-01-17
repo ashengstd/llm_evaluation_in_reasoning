@@ -131,4 +131,4 @@ Errors encountered during the evaluation process are logged and stored in the `r
 - `datasets`: Library for loading and processing datasets.
 - `LiteLLM_Model`, `MajorityVoteModel`: Model classes used for evaluation.
 
-For more details, refer to the [GitHub repository](https://github.com/your-repo-link).
+For more details, refer to the [GitHub repository](https://github.com/ashengstd/llm_evaluation_in_reasoning/).
