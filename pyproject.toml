@@ -4,7 +4,7 @@ description = "A project for evaluating reasoning capabilities in large language
 readme = "README.md"
 keywords = [ "llm", "evaluation", "reasoning",]
 requires-python = ">=3.11"
-dependencies = [ "fire", "litellm==1.54.1", "python-dotenv", "datasets", "pathlib", "rich", "sympy",]
+dependencies = [ "fire", "litellm==1.61.15", "python-dotenv", "datasets", "pathlib", "rich", "sympy",]
 version = "1.4.2"
 classifiers = [ "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Operating System :: OS Independent", "License :: OSI Approved :: MIT License",]
 [[project.authors]]
