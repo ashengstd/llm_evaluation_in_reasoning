@@ -74,7 +74,7 @@ jobs:
       - name: Verify distribution files
         run: ls -R dist/
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: dist/
@@ -87,12 +87,12 @@ jobs:
           # Wait a few seconds to ensure tag is available before proceeding
           sleep 5
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifact
           path: dist/
       - name: Publish to GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: dist/*
           tag_name: v${{ github.event.inputs.version }}
